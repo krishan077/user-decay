@@ -1,0 +1,389 @@
+<div id="container">
+    <div class="css-uwf2km css-55ua1m tailwind">
+        @if(!loader()) {
+        <div class="size-full overflow-auto bg-slate-50">
+            <div class="max-w-7xl mx-auto p-8">
+                <div class="mb-8 flex  items-start justify-between gap-4">
+                    <div>
+                        <h1 class="text-3xl mb-2">Survey Response Dashboard</h1>
+                        <p class="text-slate-600">Analysis of survey completion and termination by stage</p>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <p>{{company_name}}</p>
+                        <button (click)="showLogoutDialog = true"
+                            class="bg-red-500 hover:bg-red-600 text-white py-1 px-2 cursor-pointer rounded-lg">
+                            Logout
+                        </button>
+                    </div>
+
+                </div>
+
+                <div class="mb-4">
+                    <div class="bg-white rounded-lg p-4 shadow-sm"><label
+                            class="block text-sm font-medium text-slate-700 mb-2">Select Study</label>
+                        <div class="relative">
+                            <button (click)="isSurveyDropdownOpen = !isSurveyDropdownOpen"
+                                class="w-full px-4 py-3 text-left border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white hover:bg-slate-50 flex items-center justify-between">
+                                <div class="flex items-center gap-3 flex-1 min-w-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        class="lucide lucide-file-text w-5 h-5 text-slate-600 flex-shrink-0">
+                                        <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z">
+                                        </path>
+                                        <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
+                                        <path d="M10 9H8"></path>
+                                        <path d="M16 13H8"></path>
+                                        <path d="M16 17H8"></path>
+                                    </svg>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="font-medium text-slate-900 truncate">{{ selectedSurvey().study_name
+                                            }}</div>
+                                        <div class="flex items-center gap-3 text-xs text-slate-500 mt-1">
+                                            <span class="font-mono">{{ selectedSurvey().study_id }}</span>
+                                            @if(selectedSurvey().start_date) {
+                                            <span class="flex items-center gap-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-calendar w-3 h-3">
+                                                    <path d="M8 2v4"></path>
+                                                    <path d="M16 2v4"></path>
+                                                    <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                                                    <path d="M3 10h18"></path>
+                                                </svg>{{selectedSurvey().start_date | date: 'mediumDate'}}</span>
+                                            }
+                                            <span
+                                                class="px-2 py-0.5 rounded text-xs bg-green-100 text-green-700">{{selectedSurvey().status
+                                                == 3 ? 'Completed' : 'Active'}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <svg class="w-5 h-5 text-slate-400 transition-transform"
+                                    [ngClass]="isSurveyDropdownOpen ? 'rotate-180' : ''" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            @if (isSurveyDropdownOpen) {
+                            <div
+                                class="absolute z-10 w-full mt-2 bg-white border border-slate-300 rounded-lg shadow-lg max-h-96 overflow-hidden">
+                                <div class="p-3 border-b border-slate-200">
+                                    <input type="text" placeholder="Search surveys by name or ID..."
+                                        class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        [(ngModel)]="surveySearchTerm">
+                                    <div class="text-xs text-slate-500 mt-2">{{ filteredStudies.length }} of {{
+                                        filteredStudies.length }} surveys
+                                    </div>
+                                </div>
+                                @if (filteredStudies.length > 0) {
+                                <div class="overflow-y-auto max-h-80">
+                                    @for (survey of filteredStudies; track survey.study_id) {
+                                    <button (click)="selectSurvey(survey)"
+                                        class="w-full text-left p-4 border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer">
+                                        <div class="flex items-center gap-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round"
+                                                class="lucide lucide-file-text w-5 h-5 flex-shrink-0 text-slate-600">
+                                                <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z">
+                                                </path>
+                                                <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
+                                                <path d="M10 9H8"></path>
+                                                <path d="M16 13H8"></path>
+                                                <path d="M16 17H8"></path>
+                                            </svg>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="font-medium mb-1 truncate text-slate-900">{{
+                                                    survey.study_name }}
+                                                </div>
+                                                <div class="flex items-center gap-3 text-xs text-slate-500">
+                                                    <span class="font-mono">{{ survey.study_id }}</span>
+                                                    @if(survey.start_date) {
+                                                    <span class="flex items-center gap-1">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                            stroke-width="2" stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                            class="lucide lucide-calendar w-3 h-3">
+                                                            <path d="M8 2v4"></path>
+                                                            <path d="M16 2v4"></path>
+                                                            <rect width="18" height="18" x="3" y="4" rx="2">
+                                                            </rect>
+                                                            <path d="M3 10h18"></path>
+                                                        </svg>{{survey.start_date | date : 'mediumDate'}}</span>
+                                                    }
+                                                    <span class="px-2 py-0.5 rounded"
+                                                        [ngClass]="survey.status == 3 ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'">
+                                                        {{survey.status == 3 ? 'Completed' : 'Active'}}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </button>
+                                    }
+                                </div>
+                                }
+                                @else {
+                                <div class="overflow-y-auto max-h-80">
+                                    <div class="p-8 text-center text-slate-500">No surveys found matching your search
+                                    </div>
+                                </div>
+                                }
+                            </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg p-4 shadow-sm">
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Select Cell</label>
+                        <div class="flex flex-wrap gap-2">
+                            <!-- <button class="px-4 py-2 rounded-lg font-medium transition-colors text-xs cursor-pointer"
+                                [ngClass]="selectedCell == 'overall' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
+                                (click)="selectCell('overall')">
+                                <div class="flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="lucide lucide-activity w-4 h-4">
+                                        <path
+                                            d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2">
+                                        </path>
+                                    </svg>All Cells
+                                </div>
+                            </button>
+                            @for(cell of selectedSurvey().target; track cell){
+                            <button class="px-4 py-2 rounded-lg font-medium transition-colors text-xs cursor-pointer"
+                                (click)="selectCell(cell)"
+                                [ngClass]="selectedCell?.cnt_id == cell.cnt_id ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'">{{cell.cell_name}}</button>
+                            } -->
+
+                            <select [(ngModel)]="selectedCell" class="px-4 py-2 border border-slate-300 rounded-lg"
+                                style="text-transform: capitalize;">
+
+                                <option value="overall">All Cells</option>
+
+                                @for (cell of selectedSurvey().target; track cell) {
+                                <option [value]="cell" style="text-transform: capitalize;">
+                                    {{cell.cell_name}}
+                                </option>
+                                }
+
+                            </select>
+                        </div>
+                        <!-- <div class="mt-4 p-3 bg-slate-50 rounded-lg">
+                            @if(selectedCell == 'overall') {
+                            <div class="text-sm text-slate-600">Viewing aggregated data
+                                from all {{selectedSurvey().target.length}} cells</div>
+                            }
+                            @else {
+                            <div class="text-sm text-slate-600">Viewing data from {{selectedCell.cell_name}} only</div>
+                            }
+                        </div> -->
+                    </div>
+                </div>
+                
+                @if(!userLoader()) {
+                <div class="grid grid-cols-1 md:grid-cols-7 gap-4 mb-8">
+
+                    @for(card of statsCards; track card.title) {
+
+                    <div class="bg-white rounded-lg p-3 shadow-sm relative">
+
+                        @if(card.type) {
+                        <button (click)="downloadCsv(card.type)" title="Download CSV"
+                            class="absolute top-2 right-2 text-slate-400 hover:text-blue-600 cursor-pointer">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 16V4m0 12l-4-4m4 4l4-4M4 20h16" />
+                            </svg>
+
+                        </button>
+                        }
+
+                        <div class="text-slate-500 text-sm mb-1">
+                            {{ card.title }}
+                        </div>
+
+                        <div class="text-xl" [ngClass]="card.valueClass">
+                            {{ card.count }}
+                        </div>
+
+                    </div>
+
+                    }
+
+                </div>
+
+                <div class="grid grid-cols-2 lg:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white rounded-lg p-6 shadow-sm mb-8">
+                            <div class="flex items-center justify-between mb-6">
+                                <h2 class="text-xl">Terminations by Stage</h2>
+                                <button (click)="downloadChartPNG('stage')"
+                                    class="text-slate-400 hover:text-blue-600 cursor-pointer">
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 16V4m0 12l-4-4m4 4l4-4M4 20h16" />
+                                    </svg>
+
+                                </button>
+                            </div>
+                            <div style="width: 100%; height: 400px; min-width: 0px;">
+                                <div #chartContainer class="w-full h-full"></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg p-6 shadow-sm mb-8">
+                            <div class="flex items-center justify-between mb-6">
+                                <h2 class="text-xl">User Funnel by Stage</h2>
+
+                                <button (click)="downloadChartPNG('funnel')"
+                                    class="text-slate-400 hover:text-blue-600 cursor-pointer">
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 16V4m0 12l-4-4m4 4l4-4M4 20h16" />
+                                    </svg>
+
+                                </button>
+                            </div>
+
+                            <div style="width: 100%; height: 400px; min-width: 0;">
+                                <div #funnelContainer class="w-full h-full"></div>
+                            </div>
+                        </div>
+                </div>
+
+                <div class="bg-white rounded-lg p-6 shadow-sm mb-8">
+                    <h2 class="text-xl mb-4">Key Insights</h2>
+
+                    <div class="space-y-3">
+
+                        @for(insight of keyInsights; track insight) {
+
+                        <div class="flex items-start gap-3">
+
+                            <div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+
+                            <p class="text-slate-700">
+                                {{ insight }}
+                            </p>
+
+                        </div>
+
+                        }
+
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl">User Termination Details</h2>
+                        <div class="flex gap-3">
+                            <input type="text" placeholder="Search user ID, Reasons, or Last Track..."
+                                class="px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-80"
+                                [(ngModel)]="userSearchTerm">
+                            <select [(ngModel)]="selectedStage" class="px-4 py-2 border border-slate-300 rounded-lg"
+                                style="text-transform: capitalize;">
+
+                                <option value="">All Stages</option>
+
+                                @for (stage of availableStages; track stage.wh_page_stage) {
+                                <option [value]="stage.wh_page_stage" style="text-transform: capitalize;">
+                                    Stage {{ stage.wh_page_stage }} - {{ stage.wh_track || 'No Track' }}
+                                </option>
+                                }
+
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b border-slate-200">
+                                    <th class="text-left py-3 px-4 font-semibold text-slate-700">User ID</th>
+                                    <th class="text-left py-3 px-4 font-semibold text-slate-700">Timestamp</th>
+                                    <th class="text-left py-3 px-4 font-semibold text-slate-700">Stage</th>
+                                    <th class="text-left py-3 px-4 font-semibold text-slate-700">Flag</th>
+                                    <th class="text-left py-3 px-4 font-semibold text-slate-700">Last Track</th>
+                                    <th class="text-left py-3 px-4 font-semibold text-slate-700">Reason</th>
+                                    <th class="text-left py-3 px-4 font-semibold text-slate-700">Question SPSS</th>
+                                    <th class="text-left py-3 px-4 font-semibold text-slate-700">Response</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for(user of filteredUsers.filter((u) => u.wh_flag != 3); track user) {
+                                <tr class="border-b border-slate-100 hover:bg-slate-50">
+                                    <td class="py-3 px-4 font-mono text-sm text-blue-600">{{user.wh_mo_id}}</td>
+                                    <td class="py-3 px-4 text-slate-600 text-sm font-mono">{{user.created_at | date:
+                                        'HH:mm:ss dd/MM/yyyy'}}</td>
+                                    <td class="py-3 px-4"><span
+                                            class="inline-flex items-center justify-center w-8 h-8 rounded-full font-semibold text-sm bg-red-50 text-red-700">{{user.wh_page_stage}}</span>
+                                    </td>
+                                    <td class="py-3 px-4"><span
+                                            class="inline-block px-3 py-1 rounded-full text-sm bg-red-50 text-red-700">{{user.wh_flag
+                                            || '-'}}</span>
+                                    </td>
+                                    <td class="py-3 px-4 text-slate-700 max-w-xs">{{user.wh_track || '-'}}</td>
+                                    <td class="py-3 px-4 text-slate-700 max-w-xs">{{user.user_termination?.reason ||
+                                        '-'}}</td>
+                                    <td class="py-3 px-4 text-slate-700 max-w-xs">{{user.user_termination?.qs_spss ||
+                                        '-'}}</td>
+                                    <td class="py-3 px-4 text-slate-700 max-w-xs">
+                                        {{formatResponse(user.user_termination?.response)}}</td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                }
+                @else {
+                <div class="flex justify-center items-center w-full h-screen">
+                    <img src="Loading_icon.gif" alt="">
+                </div>
+                }
+            </div>
+        </div>
+        }
+        @else {
+        <div class="flex justify-center items-center w-full h-screen">
+            <img src="Loading_icon.gif" alt="">
+        </div>
+        }
+    </div>
+</div>
+
+@if(showLogoutDialog) {
+<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-md mx-4">
+        <h3 class="text-lg font-semibold mb-2">
+            Logout Confirmation
+        </h3>
+
+        <p class="text-slate-600 mb-6">
+            Are you sure you want to logout?
+        </p>
+
+        <div class="flex justify-end gap-3">
+            <button (click)="showLogoutDialog = false"
+                class="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-100 cursor-pointer">
+                Cancel
+            </button>
+
+            <button (click)="confirmLogout()"
+                class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 cursor-pointer">
+                Logout
+            </button>
+        </div>
+    </div>
+</div>
+}
