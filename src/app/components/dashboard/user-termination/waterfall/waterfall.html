@@ -1,0 +1,18 @@
+
+    <!-- KPI cards -->
+    <section class="metrics-grid">
+        @for (metric of metricCards; track metric.title) {
+        <article class="metric-card">
+            <div class="metric-title">{{ metric.title }}</div>
+
+            <div class="metric-value" [class.success]="metric.color === 'success'"
+                [class.danger]="metric.color === 'danger'">
+                {{ metric.value }}
+            </div>
+
+            <div class="metric-description">
+                {{ metric.description }}
+            </div>
+        </article>
+        }
+    </section>

@@ -1,0 +1,117 @@
+@if(!loader()) {
+<header class="top">
+    <div class="brand">
+        <span class="mark">◍</span>
+        <div>
+            <h1>User Decay — {{ selectedSurvey()?.study_name ?? 'Loading study…' }}</h1>
+        </div>
+    </div>
+
+    <div class="top-right">
+        <nav>
+            @for(tab of decayTabs; track tab) {
+            <a (click)="selectTab(tab.name)" [class.active]="selectedTab() === tab.name">{{ tab.label }}</a>
+            }
+        </nav>
+    </div>
+</header>
+
+<div class="dashboard">
+    <section class="filter-panel">
+        <div class="filters">
+            <div class="filter-field">
+                <label for="cell">CELL</label>
+                <select [(ngModel)]="selectedCell" (ngModelChange)="selectCell($event)" >
+                    @for (cell of allCells(); track cell) {
+                    <option [ngValue]="cell">{{ cell.cell_name }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="filter-field">
+                <label for="quota">QUOTA GROUP</label>
+
+                <select id="quota" [(ngModel)]="selectedqoutaGroup" (ngModelChange)="selectQoutaGroup($event)">
+                    <option ngValue="all">All groups</option>
+                    @for (quota of qoutaGroups(); track quota.cnq_id) {
+                    <option [ngValue]="quota.cnq_id">
+                        {{ quota.cnq_quota_name }}
+                    </option>
+                    }
+                </select>
+            </div>
+            <!-- 
+      <div class="filter-field">
+        <label for="gender">GENDER</label>
+        <select id="gender" [(ngModel)]="filters.gender">
+          <option value="all">All</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label for="ageGroup">AGE GROUP</label>
+        <select id="ageGroup" [(ngModel)]="filters.ageGroup">
+          <option value="all">All</option>
+          @for (age of ageGroups; track age) {
+            <option [value]="age">{{ age }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label for="source">SAMPLE SOURCE</label>
+        <select id="source" [(ngModel)]="filters.source">
+          <option value="all">All sources</option>
+          @for (source of sampleSources; track source) {
+            <option [value]="source">{{ source }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label for="device">DEVICE</label>
+        <select id="device" [(ngModel)]="filters.device">
+          <option value="all">All devices</option>
+          @for (device of devices; track device) {
+            <option [value]="device">{{ device }}</option>
+          }
+        </select>
+      </div> -->
+
+            <div class="base-count">
+                <span>Base</span>
+                <strong>{{ selectedCell()?.total_users | number }}</strong>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+
+@if(!loader()) {
+
+@if(selectedTab() === 'question-decay') {
+<app-question-decay [allQuestions]="allQuestions" [categories]="categories"></app-question-decay>
+}
+@else if(selectedTab() === 'respondents') {
+<app-respondents [usersData]="usersData()" [allQuestions]="allQuestions"></app-respondents>
+}
+@else {
+<app-waterfall [metricCards]="metricCards()"></app-waterfall>
+}
+
+}
+@else {
+<div class="flex justify-center items-center w-full h-screen">
+    <img src="Loading_icon.gif" alt="">
+</div>
+}
+}
+@else {
+<div class="flex justify-center items-center w-full h-screen">
+    <img src="Loading_icon.gif" alt="">
+</div>
+}

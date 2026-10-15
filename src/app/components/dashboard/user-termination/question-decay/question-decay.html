@@ -1,0 +1,116 @@
+<div class="decay-container">
+    <!-- Header -->
+    <header class="header-section">
+        <h2>Decay by question</h2>
+        <p class="sub-heading">
+            Base is the screen's own base — respondents routed around a question never enter its
+            denominator.
+            Severity compares a screen against the median decay of its own stage.
+        </p>
+    </header>
+
+    <!-- Controls Bar -->
+    <div class="controls-bar">
+        <div class="search-input-wrapper">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999"
+                stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" placeholder="Search screen, text or termination rule..." [(ngModel)]="searchQuery" />
+        </div>
+
+        <div class="dropdown-wrapper">
+            <select [(ngModel)]="selectedCategory">
+                <option value="All stages">All stages</option>
+                @for(stage of categories; track stage ){
+                <option [value]="stage">{{stage}}</option>
+                }
+            </select>
+        </div>
+
+        <div class="tab-filters">
+            <button class="tab-btn" [class.active]="activeTab === 'served'" (click)="setTab('served')">
+                Served screens
+            </button>
+            <!-- <button class="tab-btn" [class.active]="activeTab === 'hidden'" (click)="setTab('hidden')">
+                Include hidden
+            </button> -->
+            <button class="tab-btn" [class.active]="activeTab === 'loss'" (click)="setTab('loss')">
+                Loss only
+            </button>
+        </div>
+
+        <div class="total-count">
+            {{ filteredQuestions.length }} screens
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="table-responsive">
+        <table class="decay-table">
+            <thead>
+                <tr>
+                    <th class="col-id">#</th>
+                    <th class="col-screen">SCREEN</th>
+                    <th class="col-num">BASE</th>
+                    <th class="col-num">COVERAGE</th>
+                    <th class="col-num">LOST</th>
+                    <th class="col-mix">LOSS MIX</th>
+                    <th class="col-num">DECAY</th>
+                    <th class="col-num">OF ALL LOSS</th>
+                    <th class="col-num">MEDIAN</th>
+                    <th class="col-flag">FLAG</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let row of paginatedQuestions; let i = index">
+                    <td class="col-id cell-muted">{{ i+1 }}</td>
+                    <td class="col-screen">
+                        <div class="screen-title">
+                            <span class="screen-name">{{ row.spss }}</span>
+                            <!-- <span *ngIf="row.isHidden" class="hidden-tag">HIDDEN</span> -->
+                        </div>
+                        <div class="screen-desc" innerHTML="{{ row.question }}"></div>
+                    </td>
+                    <td class="col-num font-weight-bold">{{ 0 }}</td>
+                    <td class="col-num cell-muted">{{ 0 }}%</td>
+                    <td class="col-num font-weight-bold">{{ 0 }}</td>
+                    <td class="col-mix">
+                        <div class="progress-bar-container">
+                            <div class="progress-fill blue-fill" [style.width.%]="0"></div>
+                            <div class="progress-fill orange-fill" [style.width.%]="0"></div>
+                        </div>
+                    </td>
+                    <td class="col-num font-weight-bold" [class.text-danger]=" 'critical'">
+                        {{ 0 | number:'1.1-1' }}%
+                    </td>
+                    <td class="col-num cell-muted">{{ 0| number:'1.1-1' }}%</td>
+                    <td class="col-num cell-muted">{{ 0 }}</td>
+                    <td class="col-flag">
+                        <span class="flag-badge badge-ok">ok</span>
+                        <!-- <span *ngIf="row.flagType === 'ok'" class="flag-badge badge-ok">ok</span> -->
+                        <!-- <span *ngIf="row.flagType === 'critical'" class="flag-badge badge-critical">
+              critical &times;{{ row.flagMultiplier }}
+            </span> -->
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+        <div class="decay-footer">
+        <span class="pagination-info">
+            {{ startRecord }}–{{ endRecord }} of {{ filteredQuestions.length }}
+        </span>
+
+        <div class="pagination-controls">
+            <button class="btn-pagination" [disabled]="currentPage === 1" (click)="previousPage()">
+                &larr; Previous
+            </button>
+
+            <button class="btn-pagination btn-next" [disabled]="currentPage >= totalPages" (click)="nextPage()">
+                Next &rarr;
+            </button>
+        </div>
+    </div>
+</div>

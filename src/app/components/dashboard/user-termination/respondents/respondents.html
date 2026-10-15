@@ -1,0 +1,83 @@
+<div class="decay-container">
+    <!-- Header -->
+    <header class="header-section">
+        <h2>Respondent ledger</h2>
+        <p class="sub-heading">
+            One row per panellist, with the screen they died on. This is the raw material the waterfall and the per-question decay are computed from.
+        </p>
+    </header>
+
+    <!-- Controls Bar -->
+    <div class="controls-bar">
+        <div class="search-input-wrapper">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999"
+                stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" placeholder="Search screen, text or termination rule..." [(ngModel)]="searchQuery" />
+        </div>
+
+        <div class="dropdown-wrapper">
+            <select [(ngModel)]="selectedQuestion">
+                <option value="All questions">All questions</option>
+                @for(question of allQuestions; track question ){
+                <option [value]="question.spss">{{question.spss}}</option>
+                }
+            </select>
+        </div>
+<!-- 
+        <div class="tab-filters">
+            <button class="tab-btn" [class.active]="activeTab === 'served'" (click)="setTab('served')">
+                Served screens
+            </button>
+            <button class="tab-btn" [class.active]="activeTab === 'hidden'" (click)="setTab('hidden')">
+                Include hidden
+            </button>
+            <button class="tab-btn" [class.active]="activeTab === 'loss'" (click)="setTab('loss')">
+                Loss only
+            </button>
+        </div> -->
+
+        <div class="total-count">
+            {{ tabelData.length }} users
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="table-responsive">
+        <table class="decay-table">
+            <thead>
+                <tr>
+                    @for(header of tableHeaders; track header){
+                        <th class="col-mix">{{header}}</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let user of paginatedUsers; let i = index">
+                    @for(header of tableHeaders; track header){
+                    <td class="col-mix">
+                        <span>{{ header == "Disposition" ? user[header.toLocaleLowerCase()].status : header == "Quota Group" ? user["quotaGroup"] : header == "Exited At" ? user["exitedAt"].title :  user[header.toLocaleLowerCase()] }}</span>
+                    </td>
+                    }                   
+                </tr>
+            </tbody>
+        </table>
+    </div>
+        <div class="decay-footer">
+        <span class="pagination-info">
+            {{ startRecord }}–{{ endRecord }} of {{ tabelData.length }}
+        </span>
+
+        <div class="pagination-controls">
+            <button class="btn-pagination" [disabled]="currentPage === 1" (click)="previousPage()">
+                &larr; Previous
+            </button>
+
+            <button class="btn-pagination btn-next" [disabled]="currentPage >= totalPages" (click)="nextPage()">
+                Next &rarr;
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,80 @@
+@if(!loader()) {
+<div class="decay-container">
+    <header class="header-section">
+        <h2>Company Table</h2>
+        <p class="sub-heading">
+            Select a company below to continue and view its reports.
+        </p>
+    </header>
+
+    <div class="controls-bar">
+        <div class="search-input-wrapper">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999"
+                stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" placeholder="Search screen, text or termination rule..." [(ngModel)]="searchQuery" />
+        </div>
+
+        <div class="total-count">
+            {{ filteredCompanies.length }} companies
+        </div>
+    </div>
+
+    <div class="table-container">
+    <div class="table-responsive">
+        <table class="decay-table">
+            <thead>
+                <tr>
+                    <th class="col-id">Company ID</th>
+                    <th class="col-screen">Company Name</th>
+                    <th class="col-screen">Company email</th>
+                    <th class="col-num !text-gray-400">Draft</th>
+                    <th class="col-num !text-orange-600">Review</th>
+                    <th class="col-num !text-green-600">Live</th>
+                    <th class="col-num">Complete</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let row of paginatedScreens" (click)="selectCompany(row)">
+                    <td class="col-id font-weight-bold">{{ row.comp_id }}</td>
+                    <td class="col-mix font-weight-bold">{{ row.comp_name }}
+                    </td>
+                    <td class="col-mix font-weight-bold">{{ row.email}}</td>
+                    <td class="col-num font-weight-bold">
+                        {{ row.study_details.draft }}
+                    </td>
+                                        <td class="col-num font-weight-bold">
+                        {{ row.study_details.review }}
+                    </td>
+                                        <td class="col-num font-weight-bold">
+                        {{ row.study_details.live }}
+                    </td>
+                                        <td class="col-num font-weight-bold">
+                        {{ row.study_details.complete }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="decay-footer">
+        <span class="pagination-info">
+            {{ startRecord }}–{{ endRecord }} of {{ filteredCompanies.length }}
+        </span>
+
+        <div class="pagination-controls">
+            <button class="btn-pagination" [disabled]="currentPage === 1" (click)="previousPage()">
+                &larr; Previous
+            </button>
+
+            <button class="btn-pagination btn-next" [disabled]="currentPage >= totalPages" (click)="nextPage()">
+                Next &rarr;
+            </button>
+        </div>
+    </div>
+    </div>
+
+</div>
+}

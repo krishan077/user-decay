@@ -1,0 +1,111 @@
+@if(!loader()) {
+
+<div class="decay-container">
+    <!-- Header -->
+    <header class="header-section" style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="heading-area">
+                    <h2>Study Table</h2>
+        <p class="sub-heading">
+            Select the study to analyse survey completion and termination by stage.
+        </p>
+        </div>
+        @if(user && (user.role == 'monet-user' || user.role == 'monet-admin')){
+                    <button (click)="NavigateToCompanyList()" 
+            class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 cursor-pointer rounded-lg">
+            Switch Account
+        </button>
+        }
+    </header>
+
+    <!-- Controls Bar -->
+    <div class="controls-bar">
+        <div class="search-input-wrapper">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999"
+                stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" placeholder="Search screen, text or termination rule..." [(ngModel)]="searchQuery" />
+        </div>
+
+
+        <div class="tab-filters">
+            <button class="tab-btn" [class.active]="activeTab === 'all'" (click)="setTab('all')">
+                All
+            </button>
+            <button class="tab-btn" [class.active]="activeTab === 'live'" (click)="setTab('live')">
+                Live
+            </button>
+            <button class="tab-btn" [class.active]="activeTab === 'complete'" (click)="setTab('complete')">
+                Complete
+            </button>
+        </div>
+
+        <div class="total-count">
+            {{ filteredScreens.length }} studies
+        </div>
+    </div>
+
+    <!-- Data Table -->
+
+    <div class="table-container">
+    <div class="table-responsive">
+        <table class="decay-table">
+            <thead>
+                <tr>
+                    <!-- <th class="col-id">Job ID</th> -->
+                    <th class="col-id">Study ID</th>
+                    <th class="col-screen">Study Name</th>
+                    <th class="col-mix">Study Type</th>
+                    <th class="col-mix">Platform</th>
+                    <th class="col-mix">Status</th>
+                    <th class="col-mix">Progress</th>
+                    <th class="col-mix">LOI</th>
+                    <th class="col-mix">Start Date</th>
+                    <th class="col-mix">End Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let row of paginatedScreens" (click)="selectStudy(row)">
+                    <!-- <td class="col-id cell-muted">{{ row.job_id }}</td> -->
+                    <td class="col-id font-weight-bold">{{ row.study_id }}</td>
+                    <td class="col-mix font-weight-bold">{{ row.study_name }}
+                    </td>
+                    <td class="col-mix font-weight-bold">{{ row.study_type}}</td>
+                    <td class="col-mix font-weight-bold">{{ row.paltfrom }}</td>
+                    <td class="col-mix font-weight-bold">{{ row.status }}</td>
+                    <td class="col-mix">
+                        <div class="progress-bar-container">
+                            <div class="progress-fill blue-fill" [style.width.%]="row.progress">
+                            </div>
+                        </div>
+                    </td>
+                    <td class="col-mix">
+                        {{ row.loi / 60 | number:'1.0-0' }} min
+                    </td>
+                    <td class="col-mix cell-muted">{{ row.start_date | date }}</td>
+                    <td class="col-mix cell-muted">{{ (row.end_date | date) || "-" }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="decay-footer">
+        <span class="pagination-info">
+            {{ startRecord }}–{{ endRecord }} of {{ filteredScreens.length }}
+        </span>
+
+        <div class="pagination-controls">
+            <button class="btn-pagination" [disabled]="currentPage === 1" (click)="previousPage()">
+                &larr; Previous
+            </button>
+
+            <button class="btn-pagination btn-next" [disabled]="currentPage >= totalPages" (click)="nextPage()">
+                Next &rarr;
+            </button>
+        </div>
+    </div>
+    </div>
+
+</div>
+}
