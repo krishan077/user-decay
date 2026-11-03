@@ -1,4 +1,4 @@
-@if(!loader()) {
+@if(!userLoader()) {
 <header class="top">
     <div class="brand">
         <span class="mark">◍</span>
@@ -19,27 +19,54 @@
 <div class="dashboard">
     <section class="filter-panel">
         <div class="filters">
-            <div class="filter-field">
-                <label for="cell">CELL</label>
-                <select [(ngModel)]="selectedCell" (ngModelChange)="selectCell($event)" >
-                    @for (cell of allCells(); track cell) {
-                    <option [ngValue]="cell">{{ cell.cell_name }}</option>
-                    }
-                </select>
-            </div>
+<div class="filter-field">
+  <label for="cell">CELL</label>
 
-            <div class="filter-field">
-                <label for="quota">QUOTA GROUP</label>
+  <select
+    id="cell"
+    [ngModel]="selectedCell()"
+    (ngModelChange)="selectCell($event)"
+  >
+    @for (cell of allCells(); track cell.cnt_id) {
+      <option [ngValue]="cell">
+        {{ cell.cell_name }}
+      </option>
+    }
+  </select>
+</div>
 
-                <select id="quota" [(ngModel)]="selectedqoutaGroup" (ngModelChange)="selectQoutaGroup($event)">
-                    <option ngValue="all">All groups</option>
-                    @for (quota of qoutaGroups(); track quota.cnq_id) {
-                    <option [ngValue]="quota.cnq_id">
-                        {{ quota.cnq_quota_name }}
-                    </option>
-                    }
-                </select>
-            </div>
+<div class="filter-field">
+  <label for="quota">QUOTA GROUP</label>
+
+  <select
+    id="quota"
+    [ngModel]="selectedqoutaGroup()"
+    (ngModelChange)="selectQoutaGroup($event)"
+  >
+    <option value="all">All groups</option>
+
+    @for (quota of qoutaGroups(); track quota.cnq_id) {
+      <option [value]="quota.cnq_id">
+        {{ quota.cnq_quota_name }}
+      </option>
+    }
+  </select>
+</div>
+
+<div class="base-count">
+  <span>Base</span>
+  <strong>{{ selectedCell()?.total_users | number }}</strong>
+  @if (loader()) {
+                <span>
+                    <svg class="login-spinner" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <circle cx="12" cy="12" r="9" stroke-opacity="0.25" />
+                        <path d="M21 12a9 9 0 0 0-9-9" stroke-linecap="round" />
+                    </svg>
+                </span>
+                }
+</div>
+
             <!-- 
       <div class="filter-field">
         <label for="gender">GENDER</label>
@@ -81,34 +108,26 @@
         </select>
       </div> -->
 
-            <div class="base-count">
+            <!-- <div class="base-count">
                 <span>Base</span>
                 <strong>{{ selectedCell()?.total_users | number }}</strong>
-            </div>
+            </div> -->
         </div>
     </section>
 
 </div>
 
 
-@if(!loader()) {
-
 @if(selectedTab() === 'question-decay') {
-<app-question-decay [allQuestions]="allQuestions" [categories]="categories"></app-question-decay>
+<app-question-decay [stageByData]="stageByData()" [selectedStage]="selectedStage"></app-question-decay>
 }
 @else if(selectedTab() === 'respondents') {
 <app-respondents [usersData]="usersData()" [allQuestions]="allQuestions"></app-respondents>
 }
 @else {
-<app-waterfall [metricCards]="metricCards()"></app-waterfall>
+<app-waterfall [metricCards]="metricCards()" [stageByData]="stageByData()" (stageSelected)="onStageSelected($event)"></app-waterfall>
 }
 
-}
-@else {
-<div class="flex justify-center items-center w-full h-screen">
-    <img src="Loading_icon.gif" alt="">
-</div>
-}
 }
 @else {
 <div class="flex justify-center items-center w-full h-screen">

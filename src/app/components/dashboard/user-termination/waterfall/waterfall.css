@@ -221,3 +221,151 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.stage-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
+  margin-right: 8px;
+  border-radius: 7px;
+  background: #eef2ff;
+  color: #4338ca;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.screen-title {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.screen-name {
+  font-weight: 600;
+}
+
+.screen-desc {
+  margin-top: 5px;
+  margin-left: 38px;
+  color: #858b98;
+  font-size: 11px;
+  text-transform: capitalize;
+}
+
+.progress-bar-container {
+  display: flex;
+  width: 100%;
+  height: 9px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #edf0f4;
+}
+
+.progress-fill {
+  height: 100%;
+  transition: width 0.25s ease;
+}
+
+.blue-fill {
+  background: #3b82f6;
+}
+
+.orange-fill {
+  background: #f59e0b;
+}
+
+.red-fill {
+  background: #ef4444;
+}
+
+.loss-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 7px;
+  color: #737987;
+  font-size: 10px;
+}
+
+.decay-value {
+  font-weight: 600;
+}
+
+.decay-value.danger {
+  color: #dc2626;
+}
+
+.decay-value.success {
+  color: #16a34a;
+}
+
+.empty-state {
+  padding: 28px;
+  color: #858b98;
+  text-align: center;
+}
+
+
+
+.chart-card {
+  background: #fff;
+  border: 1px solid #dbe4f0;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 8px 30px rgb(30 55 90 / 7%);
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 12px;
+}
+
+.chart-header h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111c31;
+}
+
+.chart-header p {
+  margin: 0;
+  max-width: 600px;
+  color: #617897;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+#respondentDecayChart {
+  width: 100%;
+  min-height: 420px;
+}
+
+.chart-footer {
+  margin-top: 10px;
+  padding: 14px;
+  border: 1px solid #e4eaf3;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #617897;
+  font-size: 12px;
+}
+
+@media (max-width: 768px) {
+  .chart-card {
+    padding: 14px;
+  }
+
+  #respondentDecayChart {
+    min-height: 360px;
+  }
+
+  .chart-header {
+    flex-direction: column;
+  }
+}

@@ -1,18 +1,196 @@
 
-    <!-- KPI cards -->
-    <section class="metrics-grid">
-        @for (metric of metricCards; track metric.title) {
-        <article class="metric-card">
-            <div class="metric-title">{{ metric.title }}</div>
+<!-- KPI cards -->
+<section class="metrics-grid mb-8">
+  @for (metric of metricCards; track metric.title) {
+    <article class="metric-card">
+      <div class="metric-title">{{ metric.title }}</div>
 
-            <div class="metric-value" [class.success]="metric.color === 'success'"
-                [class.danger]="metric.color === 'danger'">
-                {{ metric.value }}
-            </div>
+      <div
+        class="metric-value"
+        [class.success]="metric.color === 'success'"
+        [class.danger]="metric.color === 'danger'"
+      >
+        {{ metric.value }}
+      </div>
 
-            <div class="metric-description">
-                {{ metric.description }}
-            </div>
-        </article>
+      <div class="metric-description">
+        {{ metric.description }}
+      </div>
+    </article>
+  }
+</section>
+
+<div class="decay-container">
+  <header class="header-section">
+    <h2>Respondent decay waterfall</h2>
+    <p class="sub-heading">
+      Every stage of the field, in order. Each column shows
+        respondents and exits by reason.
+    </p>
+  </header>
+    
+    <div id="respondentDecayChart"></div>
+    
+    <div class="chart-footer">
+      Hover over a stage for its respondent counts and exit reasons.
+    </div>
+  </div>
+
+
+<div class="decay-container">
+  <header class="header-section">
+    <h2>Stage ledger</h2>
+
+    <p class="sub-heading">
+      Base is the screen's own base — respondents routed around a question never enter its denominator. Severity compares a screen against the median decay of its own stage.
+    </p>
+  </header>
+
+  <div class="table-responsive">
+    <table class="decay-table">
+      <thead>
+        <tr>
+          @for (header of stageHeaders(); track header) {
+            <th
+              [ngClass]="{
+                'col-screen': $index === 0,
+                'col-mix': $index === 5,
+                'col-num': $index !== 0 && $index !== 5
+              }"
+            >
+              {{ header }}
+            </th>
+          }
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (stage of stageByData; track stage.stage) {
+          <tr (click)="selectStage(stage)">
+            <!-- Stage -->
+            <td class="col-screen">
+              <div class="screen-title">
+                <span class="stage-number">
+                  {{ stage.stage }}
+                </span>
+
+                <span class="screen-name">
+                  {{ stage.cns_name }}
+                </span>
+              </div>
+
+              <div class="screen-desc">
+                {{ getStageType(stage) }}
+              </div>
+            </td>
+
+            <!-- Screens -->
+            <td class="col-num cell-muted">
+              {{ stage.screen ?? 0 }}
+            </td>
+
+            <!-- Entered -->
+            <td class="col-num">
+              {{ getEntered(stage) | number }}
+            </td>
+
+            <!-- Exited -->
+            <td class="col-num">
+              {{ getExited(stage) | number }}
+            </td>
+
+            <!-- Decay -->
+            <td class="col-num">
+              <span
+                class="decay-value"
+                [class.danger]="getDecay(stage) >= 50"
+                [class.success]="getDecay(stage) < 20 && getEntered(stage) > 0"
+              >
+                {{ getDecay(stage) | number:'1.1-1' }}%
+              </span>
+            </td>
+
+<!-- Loss mix -->
+<td class="col-mix">
+  <div
+    class="progress-bar-container"
+    [title]="
+      'Drop-off: ' + getLossCount(stage, 'dropoff') +
+      ' | Terminated: ' + getLossCount(stage, 'terminated') +
+      ' | Discarded: ' + getLossCount(stage, 'discarded') +
+      ' | Over quota: ' + getLossCount(stage, 'overquota')
+    "
+  >
+    <div
+      class="progress-fill"
+      style="background: #14b8a6"
+      [style.width.%]="getLossWidth(stage, 'dropoff')"
+    ></div>
+
+    <div
+      class="progress-fill orange-fill"
+      [style.width.%]="getLossWidth(stage, 'terminated')"
+    ></div>
+
+    <div
+      class="progress-fill blue-fill"
+      [style.width.%]="getLossWidth(stage, 'discarded')"
+    ></div>
+
+    <div
+      class="progress-fill red-fill"
+      [style.width.%]="getLossWidth(stage, 'overquota')"
+    ></div>
+  </div>
+
+  <div class="loss-legend">
+    <span>Drop: {{ getLossCount(stage, 'dropoff') }}</span>
+    <span>T: {{ getLossCount(stage, 'terminated') }}</span>
+    <span>D: {{ getLossCount(stage, 'discarded') }}</span>
+    <span>O: {{ getLossCount(stage, 'overquota') }}</span>
+  </div>
+</td>
+
+            <!-- Passed on -->
+            <td class="col-num">
+              {{ stage.completed_users ?? 0 | number }}
+            </td>
+
+            <!-- Survival -->
+            <td class="col-num">
+              {{ getSurvival(stage) | number:'1.1-1' }}%
+            </td>
+
+            <!-- Median time -->
+            <td class="col-num cell-muted">
+              {{(stage.median ?? 0 )}}
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="9" class="empty-state">
+              No stage data available.
+            </td>
+          </tr>
         }
-    </section>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="decay-container">
+  <header class="header-section">
+    <h2>Respondent decay waterfall</h2>
+    <p class="sub-heading">
+      Every stage of the field, in order. Each column shows
+        respondents and exits by reason.
+    </p>
+  </header>
+
+  <!-- Highcharts Mounting Target Component Node -->
+  <div id="questionSurvivalChart" style="margin-top: 24px; min-height: 380px;"></div>
+
+  <div class="chart-footer">
+    Each dot is one screen in field order; larger dots are the screens flagged critical. Hover for its base and decay.
+  </div>
+  </div>

@@ -1,0 +1,265 @@
+
+.purple-fill {
+  background: #8b5cf6;
+}
+
+.progress-bar-container {
+  display: flex;
+  width: 135px;
+  height: 9px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #e2e8f0;
+}
+
+.progress-fill {
+  height: 100%;
+  transition: width 0.2s ease;
+}
+
+.red-fill{
+    background-color: rgb(224, 30, 30);
+}
+
+.loss-legend {
+  display: flex;
+  gap: 8px;
+  margin-top: 5px;
+  color: #64748b;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.empty-state {
+  padding: 32px 12px;
+  color: #64748b;
+  text-align: center;
+}
+
+.badge-critical {
+  padding: 5px 10px;
+  border: 1px solid #fecaca;
+  border-radius: 20px;
+  background: #fef2f2;
+  color: #dc2626;
+  font-size: 12px;
+}
+
+.question-detail-panel {
+  min-width: 0;
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+  position: sticky;
+  top: 12px;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #d8e0ef;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgb(25 45 80 / 6%);
+}
+
+.question-detail-panel .detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.detail-header h3 {
+  margin: 0 0 5px;
+  font-size: 14px;
+  color: #26354e;
+}
+
+.detail-header p {
+  margin: 0;
+  color: #71809b;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.close-button {
+  padding: 5px 10px;
+  border: 1px solid #d5def0;
+  border-radius: 6px;
+  background: #f5f7fc;
+  color: #40516d;
+  cursor: pointer;
+  font-size: 14px;
+  height: fit-content;
+}
+
+.detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0;
+}
+
+.detail-tags span {
+  padding: 4px 7px;
+  border: 1px solid #dbe3f1;
+  border-radius: 12px;
+  color: #41516d;
+  font-size: 14px;
+}
+
+.detail-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px 10px;
+  padding: 12px;
+  background: #f7f8fa;
+  border: 1px solid #e5e9f0;
+  border-radius: 7px;
+}
+
+.detail-metrics div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.detail-metrics span {
+  color: #77839a;
+  font-size: 12px;
+}
+
+.detail-metrics strong {
+  color: #26354e;
+  font-size: 14x;
+  
+}
+
+.detail-metrics .success {
+  color: #16844a;
+}
+
+.detail-metrics .danger {
+  color: #e52d4c;
+}
+
+.detail-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 12px 0;
+  color: #45546b;
+  font-size: 12px;
+  background: #f7f8fa;
+  border: 1px solid #e5e9f0;
+  border-radius: 7px;
+  padding: 12px;
+}
+
+.loss-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #f45b19;
+}
+
+.detail-base {
+  padding: 8px;
+  background: #f5f6f8;
+  color: #6f7b91;
+  font-size: 12px;
+}
+
+.detail-base strong {
+  margin-right: 8px;
+  color: #64728a;
+  font-size: 12px;
+}
+
+.breakdown-section {
+  margin-top: 18px;
+}
+
+.breakdown-section h4 {
+  margin: 0 0 10px;
+  color: #77839a;
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.breakdown-row {
+  display: grid;
+  grid-template-columns: minmax(55px, 1fr) minmax(35px, 1.4fr) 35px 38px;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  font-size: 9px;
+}
+
+.breakdown-label {
+  overflow: hidden;
+  color: #53617a;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.breakdown-track {
+  height: 5px;
+  overflow: hidden;
+  border-radius: 5px;
+  background: #e7e9ed;
+}
+
+.breakdown-bar {
+  height: 100%;
+  border-radius: inherit;
+  background: #f45b19;
+}
+
+.breakdown-bar.blue {
+  background: #2871f4;
+}
+
+.breakdown-value,
+.breakdown-row small {
+  text-align: right;
+}
+
+.breakdown-value {
+  color: #34415a;
+}
+
+.breakdown-row small {
+  color: #7c879b;
+}
+
+.breakdown-empty {
+  margin-top: 16px;
+  color: #7c879b;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.decay-table tbody tr {
+  cursor: pointer;
+}
+
+.decay-table tbody tr.selected-row {
+  background: #e5edff;
+  box-shadow: inset 3px 0 #3468ef;
+}
+
+.decay-table tbody tr:focus-visible {
+  outline: 2px solid #3468ef;
+  outline-offset: -2px;
+}
+
+@media (max-width: 1000px) {
+  .decay-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .question-detail-panel {
+    position: static;
+    max-height: none;
+  }
+}

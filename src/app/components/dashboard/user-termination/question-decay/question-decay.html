@@ -1,116 +1,283 @@
-<div class="decay-container">
-    <!-- Header -->
-    <header class="header-section">
-        <h2>Decay by question</h2>
-        <p class="sub-heading">
-            Base is the screen's own base — respondents routed around a question never enter its
-            denominator.
-            Severity compares a screen against the median decay of its own stage.
-        </p>
-    </header>
+<div class="flex gap-4">
+    <div class="decay-container" [class.detail-closed]="!showQuestionDetail">
+        <div>
 
-    <!-- Controls Bar -->
-    <div class="controls-bar">
-        <div class="search-input-wrapper">
-            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999"
-                stroke-width="2">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            <input type="text" placeholder="Search screen, text or termination rule..." [(ngModel)]="searchQuery" />
-        </div>
+            <!-- Header -->
+            <header class="header-section">
+                <h2>Decay by question</h2>
+                <p class="sub-heading">
+                    Base is the screen's own base — respondents routed around a question never enter its
+                    denominator.
+                    Severity compares a screen against the median decay of its own stage.
+                </p>
+            </header>
 
-        <div class="dropdown-wrapper">
-            <select [(ngModel)]="selectedCategory">
-                <option value="All stages">All stages</option>
-                @for(stage of categories; track stage ){
-                <option [value]="stage">{{stage}}</option>
-                }
-            </select>
-        </div>
+            <!-- Controls Bar -->
+            <div class="controls-bar">
+                <div class="search-input-wrapper">
+                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999"
+                        stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" placeholder="Search screen, text or termination rule..."
+                        [(ngModel)]="searchQuery" (ngModelChange)="onFilterChange()" />
+                </div>
 
-        <div class="tab-filters">
-            <button class="tab-btn" [class.active]="activeTab === 'served'" (click)="setTab('served')">
-                Served screens
-            </button>
-            <!-- <button class="tab-btn" [class.active]="activeTab === 'hidden'" (click)="setTab('hidden')">
+                <div class="dropdown-wrapper">
+                    <select [(ngModel)]="selectedCategory" (ngModelChange)="onFilterChange()">
+                        <option value="All stages">All stages</option>
+
+                        @for (stage of stageByData; track stage.cns_name) {
+                        <option [value]="stage.cns_name">{{ stage.cns_name }}</option>
+                        }
+                    </select>
+                </div>
+                <!-- 
+            <div class="tab-filters">
+                <button class="tab-btn" [class.active]="activeTab === 'served'" (click)="setTab('served')">
+                    Served screens
+                </button>
+                <button class="tab-btn" [class.active]="activeTab === 'hidden'" (click)="setTab('hidden')">
                 Include hidden
-            </button> -->
-            <button class="tab-btn" [class.active]="activeTab === 'loss'" (click)="setTab('loss')">
-                Loss only
             </button>
-        </div>
+                <button class="tab-btn" [class.active]="activeTab === 'loss'" (click)="setTab('loss')">
+                    Loss only
+                </button>
+            </div> -->
 
-        <div class="total-count">
-            {{ filteredQuestions.length }} screens
+                <div class="total-count">
+                    {{ filteredQuestions.length }} screens
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="table-responsive">
+                <table class="decay-table">
+                    <thead>
+                        <tr>
+                            <th class="col-id">#</th>
+                            <th class="col-screen">SCREEN</th>
+                            <th class="col-num">BASE</th>
+                            <th class="col-num">COVERAGE</th>
+                            <th class="col-num">LOST</th>
+                            <th class="col-mix">LOSS MIX</th>
+                            <th class="col-num">DECAY</th>
+                            <th class="col-num">OF ALL LOSS</th>
+                            <th class="col-num">MEDIAN</th>
+                            <th class="col-flag">FLAG</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @for (row of paginatedQuestions; track row.qs_id; let i = $index) {
+                        <tr (click)="selectQuestion(row)" [class.selected-row]="selectedQuestion()?.qs_id === row.qs_id"
+                            tabindex="0" (keydown.enter)="selectQuestion(row)">
+                            <td class="col-id cell-muted">
+                                {{ startRecord + i }}
+                            </td>
+
+                            <td class="col-screen">
+                                <div class="screen-title">
+                                    <span class="screen-name">{{ row.SPSS }}</span>
+                                </div>
+
+                                <div class="screen-desc">
+                                    {{ row.qs_question }}
+                                </div>
+                            </td>
+
+                            <td class="col-num font-weight-bold">
+                                {{ row.total_users | number }}
+                            </td>
+
+                            <td class="col-num cell-muted">
+                                {{ getCoverage(row) | number:'1.0-1' }}%
+                            </td>
+
+                            <td class="col-num font-weight-bold">
+                                {{ getLost(row) | number }}
+                            </td>
+
+                            <td class="col-mix">
+                                <div class="progress-bar-container">
+                                    <div class="progress-fill red-fill"
+                                        [style.width.%]="getLossMixWidth(row, 'dropoff')">
+                                    </div>
+
+                                    <div class="progress-fill blue-fill"
+                                        [style.width.%]="getLossMixWidth(row, 'discarded')">
+                                    </div>
+
+                                    <div class="progress-fill orange-fill"
+                                        [style.width.%]="getLossMixWidth(row, 'terminated')">
+                                    </div>
+
+                                    <div class="progress-fill purple-fill"
+                                        [style.width.%]="getLossMixWidth(row, 'overquota')">
+                                    </div>
+                                </div>
+
+                                <div class="loss-legend">
+                                    <span>Drop: {{ row.dropoff_users ?? 0 }}</span>
+                                    <span>D: {{ row.discarded_users ?? 0 }}</span>
+                                    <span>T: {{ row.terminated_users ?? 0 }}</span>
+                                    <span>O: {{ row.overquota_users ?? 0 }}</span>
+                                </div>
+                            </td>
+
+                            <td class="col-num font-weight-bold" [class.text-danger]="getFlag(row) === 'critical'">
+                                {{ getDecay(row) | number:'1.1-1' }}%
+                            </td>
+
+                            <td class="col-num cell-muted">
+                                {{ getOfAllLoss(row) | number:'1.1-1' }}%
+                            </td>
+
+                            <td class="col-num cell-muted">
+                                {{(row.median ?? "-")}}
+                            </td>
+
+                            <td class="col-flag">
+                                @if (getFlag(row) === 'critical') {
+                                <span class="flag-badge badge-critical">critical</span>
+                                } @else {
+                                <span class="flag-badge badge-ok">ok</span>
+                                }
+                            </td>
+                        </tr>
+                        } @empty {
+                        <tr>
+                            <td colspan="10" class="empty-state">
+                                No questions found.
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+
+            <div class="decay-footer">
+                <span class="pagination-info">
+                    {{ startRecord }}–{{ endRecord }} of {{ filteredQuestions.length }}
+                </span>
+
+                <div class="pagination-controls">
+                    <button class="btn-pagination" [disabled]="currentPage === 1" (click)="previousPage()">
+                        &larr; Previous
+                    </button>
+
+                    <button class="btn-pagination btn-next" [disabled]="currentPage >= totalPages" (click)="nextPage()">
+                        Next &rarr;
+                    </button>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <!-- Data Table -->
-    <div class="table-responsive">
-        <table class="decay-table">
-            <thead>
-                <tr>
-                    <th class="col-id">#</th>
-                    <th class="col-screen">SCREEN</th>
-                    <th class="col-num">BASE</th>
-                    <th class="col-num">COVERAGE</th>
-                    <th class="col-num">LOST</th>
-                    <th class="col-mix">LOSS MIX</th>
-                    <th class="col-num">DECAY</th>
-                    <th class="col-num">OF ALL LOSS</th>
-                    <th class="col-num">MEDIAN</th>
-                    <th class="col-flag">FLAG</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let row of paginatedQuestions; let i = index">
-                    <td class="col-id cell-muted">{{ i+1 }}</td>
-                    <td class="col-screen">
-                        <div class="screen-title">
-                            <span class="screen-name">{{ row.spss }}</span>
-                            <!-- <span *ngIf="row.isHidden" class="hidden-tag">HIDDEN</span> -->
-                        </div>
-                        <div class="screen-desc" innerHTML="{{ row.question }}"></div>
-                    </td>
-                    <td class="col-num font-weight-bold">{{ 0 }}</td>
-                    <td class="col-num cell-muted">{{ 0 }}%</td>
-                    <td class="col-num font-weight-bold">{{ 0 }}</td>
-                    <td class="col-mix">
-                        <div class="progress-bar-container">
-                            <div class="progress-fill blue-fill" [style.width.%]="0"></div>
-                            <div class="progress-fill orange-fill" [style.width.%]="0"></div>
-                        </div>
-                    </td>
-                    <td class="col-num font-weight-bold" [class.text-danger]=" 'critical'">
-                        {{ 0 | number:'1.1-1' }}%
-                    </td>
-                    <td class="col-num cell-muted">{{ 0| number:'1.1-1' }}%</td>
-                    <td class="col-num cell-muted">{{ 0 }}</td>
-                    <td class="col-flag">
-                        <span class="flag-badge badge-ok">ok</span>
-                        <!-- <span *ngIf="row.flagType === 'ok'" class="flag-badge badge-ok">ok</span> -->
-                        <!-- <span *ngIf="row.flagType === 'critical'" class="flag-badge badge-critical">
-              critical &times;{{ row.flagMultiplier }}
-            </span> -->
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-        <div class="decay-footer">
-        <span class="pagination-info">
-            {{ startRecord }}–{{ endRecord }} of {{ filteredQuestions.length }}
-        </span>
+    @if (showQuestionDetail && selectedQuestion(); as question) {
+    <div class="decay-container">
 
-        <div class="pagination-controls">
-            <button class="btn-pagination" [disabled]="currentPage === 1" (click)="previousPage()">
-                &larr; Previous
-            </button>
+        <header class="header-section" style="display: flex; width: 100%; justify-content: space-between;">
+            <div>
+                <h2>{{ question.SPSS }}</h2>
+                <p class="sub-heading">{{ question.qs_question }}</p>
+            </div>
 
-            <button class="btn-pagination btn-next" [disabled]="currentPage >= totalPages" (click)="nextPage()">
-                Next &rarr;
+            <button type="button" class="close-button" (click)="closeQuestionDetail()">
+                Close
             </button>
+        </header>
+
+        <div class="detail-tags">
+            <span>{{ question.stage }}</span>
+            <span>{{ question.qs_type }}</span>
         </div>
+
+        <div class="detail-metrics">
+            <div>
+                <span>BASE</span>
+                <strong>{{ question.total_users | number }}</strong>
+            </div>
+
+            <div>
+                <span>PASSED</span>
+                <strong class="success">
+                    {{ question.completed_users | number }}
+                </strong>
+            </div>
+
+            <div>
+                <span>LOST</span>
+                <strong class="danger">
+                    {{ getLost(question) | number }}
+                </strong>
+            </div>
+
+            <div>
+                <span>DECAY</span>
+                <strong class="danger">
+                    {{ getDecay(question) | number:'1.1-1' }}%
+                </strong>
+            </div>
+
+            <div>
+                <span>MEDIAN</span>
+                <strong>{{ question.median ?? '—' }}</strong>
+            </div>
+
+            <div>
+                <span>P90</span>
+                <strong>{{ question.p90 ?? '—' }}</strong>
+            </div>
+        </div>
+
+        <!-- @for(){
+                    <div class="detail-section-heading">
+            <span class="loss-dot"></span>
+            Abandoned {{ getLost(question) | number }}
+        </div>
+        } -->
+
+        <div class="detail-base">
+            <strong>BASE</strong>
+            All respondents reaching this point
+        </div>
+
+        @if (question.breakdowns?.length) {
+        @for (section of question.breakdowns; track section.title) {
+        <section class="breakdown-section">
+            <h4>{{ section.title }}</h4>
+
+            @for (item of section.items; track item.label) {
+            <div class="breakdown-row">
+                <span class="breakdown-label">
+                    {{ item.label }}
+                </span>
+
+                <div class="breakdown-track">
+                    <div class="breakdown-bar" [class.blue]="section.color === 'blue'" [style.width.%]="item.decay">
+                    </div>
+                </div>
+
+                <span class="breakdown-value">
+                    {{ item.decay | number:'1.1-1' }}%
+                </span>
+
+                <small>n={{ item.count | number }}</small>
+            </div>
+            }
+        </section>
+        }
+        } @else {
+        <p class="breakdown-empty">
+            No cell, quota group, or demographic breakdown data is available
+            for this question yet.
+        </p>
+        }
+
     </div>
+    }
 </div>
